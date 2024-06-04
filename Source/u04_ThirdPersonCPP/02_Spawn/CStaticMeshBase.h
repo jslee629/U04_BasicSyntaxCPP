@@ -15,8 +15,13 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+private:
+	UFUNCTION()
+	void UpdateParameters();
+
 protected:
-	UPROPERTY(EditAnywhere)		// TODO: 이거 Anywhere말고 딴 걸로 바꿔야함
+	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* MeshComp;
+	UMaterialInstanceDynamic* DynamicMaterial;
 
 };

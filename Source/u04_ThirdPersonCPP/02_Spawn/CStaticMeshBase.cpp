@@ -2,6 +2,7 @@
 #include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ACStaticMeshBase::ACStaticMeshBase()
 {
@@ -32,8 +33,17 @@ void ACStaticMeshBase::BeginPlay()
 
 void ACStaticMeshBase::UpdateParameters()
 {
-	//TODO: 랜덤 함수 활용하여 랜덤 상수 하나 뽑아내기
-	DynamicMaterial->SetVectorParameterValue("BaseColor", )
+	FLinearColor RandomColor;
+	//RandomColor.R = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
+	//RandomColor.G = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
+	//RandomColor.B = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
+	//RandomColor.A = 1.0f;
+	FLinearColor::MakeRandomColor();
+	DynamicMaterial->SetVectorParameterValue("BaseColor", RandomColor);
+
+	DynamicMaterial->SetScalarParameterValue("Metallic", RandomColor.R);
+	DynamicMaterial->SetScalarParameterValue("Roughness", RandomColor.G);
+
 }
 
 

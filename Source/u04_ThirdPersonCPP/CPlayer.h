@@ -4,6 +4,9 @@
 #include "GameFramework/Character.h"
 #include "CPlayer.generated.h"
 
+class USpringArmComponent;
+class UCameraComponent;
+
 UCLASS()
 class U04_THIRDPERSONCPP_API ACPlayer : public ACharacter
 {
@@ -16,6 +19,17 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-public:	
+protected:	
+	void OnMoveForward(float Axis);
+	void OnMoveRight(float Axis);
+	void OnSprint();
+	void OffSprint();
+	void OnTurn(float Axis);
+	void OnLookUp(float Axis);
 
+protected:
+	UPROPERTY(VisibleAnywhere)
+	USpringArmComponent* SpringArmComp;
+	UPROPERTY(VisibleAnywhere)
+	UCameraComponent* CameraComp;
 };

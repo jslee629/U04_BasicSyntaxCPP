@@ -11,4 +11,5 @@ class U04_THIRDPERSONCPP_API Au04_ThirdPersonCPPGameModeBase : public AGameModeB
 	
 public:
 	Au04_ThirdPersonCPPGameModeBase();
+
 };

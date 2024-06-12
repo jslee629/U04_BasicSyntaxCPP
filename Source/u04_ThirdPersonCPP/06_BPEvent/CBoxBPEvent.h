@@ -7,7 +7,15 @@
 UCLASS()
 class U04_THIRDPERSONCPP_API ACBoxBPEvent : public ACBoxBase
 {
-	//TODO: Blueprint Implementable Event
 	GENERATED_BODY()
 	
+protected:
+	virtual void ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor) override;
+	virtual void ActorEndOverlap(AActor* OverlappedActor, AActor* OtherActor) override;
+
+protected:
+	UFUNCTION(BlueprintImplementableEvent, Category = "CPP Custom Event")
+	void DoSomething();
+	UFUNCTION(BlueprintNativeEvent, Category = "CPP Custom Event")
+	void ResetSomething();
 };

@@ -4,6 +4,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "CAnimInstance.h"
 
 ACPlayer::ACPlayer()
@@ -40,10 +41,23 @@ ACPlayer::ACPlayer()
 	}
 }
 
+void ACPlayer::ChangeSpeed(float InMoveSpeed)
+{
+	GetCharacterMovement()->MaxWalkSpeed = InMoveSpeed;
+}
+
 void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	BodyMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
+	LogoMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(1), this);
+
+	if (ensure(BodyMaterial) && ensure(LogoMaterial))
+	{
+		GetMesh()->SetMaterial(0, BodyMaterial);
+		GetMesh()->SetMaterial(1, LogoMaterial);
+	}
 }
 
 void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -95,5 +109,11 @@ void ACPlayer::OnTurn(float Axis)
 void ACPlayer::OnLookUp(float Axis)
 {
 	AddControllerPitchInput(Axis);
+}
+
+void ACPlayer::SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor)
+{
+	BodyMaterial->SetVectorParameterValue("BodyColor", InBodyColor);
+	LogoMaterial->SetVectorParameterValue("BodyColor", InLogoColor);
 }
 

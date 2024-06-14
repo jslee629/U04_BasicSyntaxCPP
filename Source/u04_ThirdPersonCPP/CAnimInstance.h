@@ -13,10 +13,13 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	virtual void NativeBeginPlay() override;
 
-private:
-	APawn* OwnerPawn;
-
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character")
 	float Speed;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character")
+	bool bEquipped;
+
+private:
+	APawn* OwnerPawn;
 };

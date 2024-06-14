@@ -19,7 +19,7 @@ void ACParticles::BeginPlay()
 
 void ACParticles::SpawnEmitter(int32 InIndex)
 {
-	if (ensure(InIndex))
+	if (ensure(Particles[InIndex]))
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particles[InIndex], GetActorLocation());
 	}

@@ -1,5 +1,7 @@
 #include "CAnimInstance.h"
 #include "Global.h"	
+#include "CWeaponInterface.h"
+#include "CWeapon.h"
 
 void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
@@ -8,6 +10,16 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (OwnerPawn)
 	{
 		Speed = OwnerPawn->GetVelocity().Size2D();
+
+		ICWeaponInterface* ImplementedPawn = Cast<ICWeaponInterface>(OwnerPawn);
+		if (ImplementedPawn)
+		{
+			ACWeapon* Weapon = ImplementedPawn->GetWeapon();
+			if (Weapon)
+			{
+				bEquipped = Weapon->IsEquipped();
+			}
+		}
 	}
 }
 

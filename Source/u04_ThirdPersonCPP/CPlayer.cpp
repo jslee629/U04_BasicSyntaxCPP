@@ -1,11 +1,12 @@
 #include "CPlayer.h"
 #include "Global.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "CAnimInstance.h"
+#include "CWeapon.h"
 
 ACPlayer::ACPlayer()
 {
@@ -58,6 +59,12 @@ void ACPlayer::BeginPlay()
 		GetMesh()->SetMaterial(0, BodyMaterial);
 		GetMesh()->SetMaterial(1, LogoMaterial);
 	}
+
+	// 무기 스폰
+	FActorSpawnParameters SpawnParam;
+	SpawnParam.Owner = this;
+	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	Weapon = GetWorld()->SpawnActor<ACWeapon>(SpawnParam);
 }
 
 void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -73,6 +80,7 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	// 액션 이벤트 바인딩
 	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Pressed, this, &ACPlayer::OnSprint);
 	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Released, this, &ACPlayer::OffSprint);
+	PlayerInputComponent->BindAction("Rifle", EInputEvent::IE_Pressed, this, &ACPlayer::ToggleEquip);
 }
 
 void ACPlayer::OnMoveForward(float Axis)
@@ -109,6 +117,19 @@ void ACPlayer::OnTurn(float Axis)
 void ACPlayer::OnLookUp(float Axis)
 {
 	AddControllerPitchInput(Axis);
+}
+
+void ACPlayer::ToggleEquip()
+{
+	if (Weapon == nullptr) return;
+
+	if (Weapon->IsEquipped())
+	{
+		Weapon->Unequip();
+		return;
+	}
+
+	Weapon->Equip();
 }
 
 void ACPlayer::SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor)

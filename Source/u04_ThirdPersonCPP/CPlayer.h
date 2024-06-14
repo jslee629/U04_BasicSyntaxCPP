@@ -27,7 +27,13 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-protected:	
+protected:
+	UFUNCTION(BlueprintImplementableEvent)
+	void Begin_Zoom();
+	UFUNCTION(BlueprintImplementableEvent)
+	void End_Zoom();
+
+protected:
 	void OnMoveForward(float Axis);
 	void OnMoveRight(float Axis);
 
@@ -39,6 +45,9 @@ protected:
 
 	void ToggleEquip();
 
+	void OnAim();
+	void OffAim();
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor);
@@ -46,8 +55,10 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	UCameraComponent* CameraComp;
+	UPROPERTY(EditDefaultsOnly, Category="WeaponClass")
+	TSubclassOf<ACWeapon> WeaponClass;
 
 private:
 	UMaterialInstanceDynamic* BodyMaterial;

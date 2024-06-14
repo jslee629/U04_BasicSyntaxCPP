@@ -10,6 +10,7 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (OwnerPawn)
 	{
 		Speed = OwnerPawn->GetVelocity().Size2D();
+		Direction = CalculateDirection(OwnerPawn->GetVelocity(), OwnerPawn->GetControlRotation());
 
 		ICWeaponInterface* ImplementedPawn = Cast<ICWeaponInterface>(OwnerPawn);
 		if (ImplementedPawn)
@@ -18,6 +19,7 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			if (Weapon)
 			{
 				bEquipped = Weapon->IsEquipped();
+				bAiming = Weapon->IsAiming();
 			}
 		}
 	}

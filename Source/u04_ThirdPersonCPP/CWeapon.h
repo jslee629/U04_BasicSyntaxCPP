@@ -25,6 +25,10 @@ public:
 public:
 	FORCEINLINE bool IsEquipped() { return bEquipped; }
 	FORCEINLINE bool IsEquipping() { return bEquipping; }
+	FORCEINLINE bool IsAiming() { return bAiming; }
+
+	void Begin_Aiming();	// setter 에 왠만하면 파라미터 받지 말자
+	void End_Aiming();		// setter 에 왠만하면 파라미터 받지 말자
 
 	void Equip();
 	void Begin_Equip();		// in notify
@@ -35,25 +39,25 @@ public:
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Socket")
-		FName HolsterSocket;
+	FName HolsterSocket;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Socket")
-		FName HandSocket;
+	FName HandSocket;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
-		UAnimMontage* EquipMontage;
+	UAnimMontage* EquipMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
-		UAnimMontage* UnequipMontage;
+	UAnimMontage* UnequipMontage;
 
 private:
 	UPROPERTY(VisibleDefaultsOnly)
-		USkeletalMeshComponent* MeshComp;
+	USkeletalMeshComponent* MeshComp;
 
 private:
 	ACharacter* OwnerCharacter;
 
 	bool bEquipped;
 	bool bEquipping;
-
+	bool bAiming;
 };

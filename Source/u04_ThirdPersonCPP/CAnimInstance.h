@@ -21,6 +21,9 @@ protected:
 	float Direction;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character")
+	float Pitch;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character")
 	bool bEquipped;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character")

@@ -7,6 +7,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "CAnimInstance.h"
 #include "CWeapon.h"
+#include "Widgets/CCrossHairWidget.h"
 
 ACPlayer::ACPlayer()
 {
@@ -42,6 +43,13 @@ ACPlayer::ACPlayer()
 	{
 		GetMesh()->SetAnimInstanceClass(AnimInstanceClass.Class);
 	}
+
+	// 에임위젯 넣어주기
+	ConstructorHelpers::FClassFinder<UCCrossHairWidget> CrossHairWidgetClassAsset(TEXT("WidgetBlueprint'/Game/Widgets/WB_Crosshair.WB_Crosshair'"));
+	if (CrossHairWidgetClassAsset.Succeeded())
+	{
+		CrossHairWidgetClass = CrossHairWidgetClassAsset.Class;
+	}
 }
 
 void ACPlayer::ChangeSpeed(float InMoveSpeed)
@@ -67,6 +75,10 @@ void ACPlayer::BeginPlay()
 	SpawnParam.Owner = this;
 	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	Weapon = GetWorld()->SpawnActor<ACWeapon>(WeaponClass, SpawnParam);
+
+	// 에임위젯 스폰
+	CrossHairWidget = CreateWidget<UCCrossHairWidget, APlayerController>(GetController<APlayerController>(), CrossHairWidgetClass);
+	CrossHairWidget->AddToViewport();
 }
 
 void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

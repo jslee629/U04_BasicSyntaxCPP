@@ -9,6 +9,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UMaterialInstanceDynamic;
 class ACWeapon;
+class UCCrossHairWidget;
 
 UCLASS()
 class U04_THIRDPERSONCPP_API ACPlayer : public ACharacter, public ICWeaponInterface
@@ -59,10 +60,13 @@ protected:
 	UCameraComponent* CameraComp;
 	UPROPERTY(EditDefaultsOnly, Category="WeaponClass")
 	TSubclassOf<ACWeapon> WeaponClass;
-
+	UPROPERTY(EditDefaultsOnly, Category = "WidgetClass")
+	TSubclassOf<UCCrossHairWidget> CrossHairWidgetClass;
+	
 private:
 	UMaterialInstanceDynamic* BodyMaterial;
 	UMaterialInstanceDynamic* LogoMaterial;
 
 	ACWeapon* Weapon;
+	UCCrossHairWidget* CrossHairWidget;
 };

@@ -1,5 +1,5 @@
-#include "Global.h"
 #include "CLogActor.h"
+#include "Global.h"
 
 ACLogActor::ACLogActor()
 {

@@ -2,14 +2,15 @@
 #include "Global.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/TimelineComponent.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "WPlayer.h"
 
 AWDoor::AWDoor()
+	: IsOpen(false), IsMoving(false), DoorSpeed(2.f)
 {
-	// initialize Color
-	Color = FLinearColor::Red;
+	PrimaryActorTick.bCanEverTick = true;
 
 	// Make RootComponent
 	RootComp = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultRootComponent"));
@@ -21,11 +22,11 @@ AWDoor::AWDoor()
 
 	// Make BoxComponent
 	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
-	Box->SetRelativeScale3D(FVector(3, 3, 3));
+	Box->SetRelativeScale3D(FVector(3.f, 3.f, 3.f));
 
 	// Attach DoorFrame, Door Mesh
-	ConstructorHelpers::FObjectFinder<UStaticMesh> DoorFrameAsset(TEXT("StaticMesh'/Game/Assignment/Door/Props/SM_DoorFrame.SM_DoorFrame'"));
-	ConstructorHelpers::FObjectFinder<UStaticMesh> DoorAsset(TEXT("StaticMesh'/Game/Assignment/Door/Props/SM_Door.SM_Door'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> DoorFrameAsset(TEXT("StaticMesh'/Game/Assignment1/Door/Props/SM_DoorFrame.SM_DoorFrame'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> DoorAsset(TEXT("StaticMesh'/Game/Assignment1/Door/Props/SM_Door.SM_Door'"));
 	DoorFrame->SetStaticMesh(DoorFrameAsset.Object);
 	Door->SetStaticMesh(DoorAsset.Object);
 	DoorFrame->SetupAttachment(RootComp);
@@ -42,9 +43,9 @@ void AWDoor::OnConstruction(const FTransform& Transform)
 	Super::OnConstruction(Transform);
 
 	// StaticLoadObject and get material asset
-	UObject* Asset_DoorFrame = StaticLoadObject(UMaterialInstanceConstant::StaticClass(), nullptr, TEXT("MaterialInstanceConstant'/Game/Assignment/Door/Materials/MI_Frame.MI_Frame'"));
+	UObject* Asset_DoorFrame = StaticLoadObject(UMaterialInstanceConstant::StaticClass(), nullptr, TEXT("MaterialInstanceConstant'/Game/Assignment1/Door/Materials/MI_Frame.MI_Frame'"));
 	UMaterialInstanceConstant* MaterialAsset_DoorFrame = Cast<UMaterialInstanceConstant>(Asset_DoorFrame);
-	UObject* Asset_Door = StaticLoadObject(UMaterialInstanceConstant::StaticClass(), nullptr, TEXT("MaterialInstanceConstant'/Game/Assignment/Door/Materials/MI_Door.MI_Door'"));
+	UObject* Asset_Door = StaticLoadObject(UMaterialInstanceConstant::StaticClass(), nullptr, TEXT("MaterialInstanceConstant'/Game/Assignment1/Door/Materials/MI_Door.MI_Door'"));
 	UMaterialInstanceConstant* MaterialAsset_Door = Cast<UMaterialInstanceConstant>(Asset_Door);
 
 	// Create Dynamic material instance
@@ -60,9 +61,6 @@ void AWDoor::OnConstruction(const FTransform& Transform)
 		Door->SetMaterial(0, DoorMaterial);
 		DoorMaterial->SetVectorParameterValue("Color", Color);
 	}
-
-	// Other setting
-	Door->SetGenerateOverlapEvents(true);
 }
 
 void AWDoor::BeginPlay()
@@ -70,9 +68,29 @@ void AWDoor::BeginPlay()
 	Super::BeginPlay();
 
 	OnActorBeginOverlap.AddDynamic(this, &AWDoor::OpenTheDoor);
+
+	TargetRotation = Door->GetRelativeRotation() + FRotator(0, 90.f, 0);
 }
 
-void AWDoor::OpenTheDoor(AActor* OverlappedActor, AActor* OtherActor)
+void AWDoor::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (IsMoving)
+	{
+		FRotator CurrentRotation = Door->GetRelativeRotation();
+		FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, DoorSpeed);
+
+		Door->SetRelativeRotation(NewRotation);
+
+		if (CurrentRotation.Equals(TargetRotation, 1.0f))
+		{
+			IsMoving = false;
+		}
+	}
+}
+
+void AWDoor::OpenTheDoor_Implementation(AActor* OverlappedActor, AActor* OtherActor)
 {
 	CLog::Log("Door Overlapped");
 
@@ -81,46 +99,42 @@ void AWDoor::OpenTheDoor(AActor* OverlappedActor, AActor* OtherActor)
 	{
 		if (Color == FLinearColor::Red)
 		{
-			if (Player->RedKey <= 0)
+			if (Player->RedKey != 1.f)
 			{
-				DrawDebugString(GetWorld(), GetActorLocation() + FVector(0, 0, 200), TEXT("You have no Red key"), nullptr, FColor::Red, 3);
+				IsOpen == false ? DrawDebugString(GetWorld(), GetActorLocation() + FVector(0, 0, 200.f), TEXT("You have no Red key"), nullptr, FColor::Red, 3.f) : nullptr;
 			}
 			else
 			{
-				Player->RedKey -= 1;
-				RotateDoor();
+				Player->RedKey = 0.1f;
+				IsMoving = true;
+				IsOpen = true;
 			}
 		}
 		else if (Color == FLinearColor::Blue)
 		{
-			if (Player->BlueKey <= 0)
+			if (Player->BlueKey != 1.f)
 			{
-				DrawDebugString(GetWorld(), GetActorLocation() + FVector(0, 0, 200), TEXT("You have no Blue key"), nullptr, FColor::Blue, 3);
+				IsOpen == false ? DrawDebugString(GetWorld(), GetActorLocation() + FVector(0, 0, 200.f), TEXT("You have no Blue key"), nullptr, FColor::Blue, 3.f) : nullptr;
 			}
 			else
 			{
-				Player->BlueKey -= 1;
-				RotateDoor();
+				Player->BlueKey = 0.1f;
+				IsMoving = true;
+				IsOpen = true;
 			}
 		}
 		else if (Color == FLinearColor::Green)
 		{
-			if (Player->GreenKey <= 0)
+			if (Player->GreenKey != 1.f)
 			{
-				DrawDebugString(GetWorld(), GetActorLocation() + FVector(0, 0, 200), TEXT("You have no Green key"), nullptr, FColor::Green, 3);
+				IsOpen == false ? DrawDebugString(GetWorld(), GetActorLocation() + FVector(0, 0, 200.f), TEXT("You have no Green key"), nullptr, FColor::Green, 3.f) : nullptr;
 			}
 			else
 			{
-				Player->GreenKey -= 1;
-				RotateDoor();
+				Player->GreenKey = 0.1f;
+				IsMoving = true;
+				IsOpen = true;
 			}
 		}
 	}
 }
-
-void AWDoor::RotateDoor()
-{
-	Door->SetRelativeRotation(FRotator(0, 90.f, 0), true);
-}
-
-

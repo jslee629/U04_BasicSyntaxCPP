@@ -24,7 +24,10 @@ public:
 
 public:
 	AWOpener* Opener;
-	int32 RedKey = 0;
-	int32 BlueKey = 0;
-	int32 GreenKey = 0;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Keys")
+	float RedKey = 0.1f;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Keys")
+	float BlueKey = 0.1f;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Keys")
+	float GreenKey = 0.1f;
 };

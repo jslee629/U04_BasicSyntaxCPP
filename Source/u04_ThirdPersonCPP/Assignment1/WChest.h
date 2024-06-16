@@ -21,11 +21,15 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	UFUNCTION(BlueprintNativeEvent)
 	void OpenTheChest();
 
 private:
+	UPROPERTY(VisibleAnywhere)
 	USceneComponent* RootComp;
+	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ChestTop;
+	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ChestBottom;
 	UMaterialInstanceDynamic* ChestMaterial;
 	UPROPERTY(EditInstanceOnly, Category = "Material Params")

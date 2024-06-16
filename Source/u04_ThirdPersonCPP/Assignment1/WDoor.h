@@ -20,19 +20,29 @@ public:
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
 public:
-	UFUNCTION()
+	UFUNCTION(BlueprintNativeEvent)
 	void OpenTheDoor(AActor* OverlappedActor, AActor* OtherActor);
-	void RotateDoor();
+
+public:
+	UPROPERTY(BlueprintReadOnly)
+	bool IsOpen;
 
 private:
+	UPROPERTY(VisibleAnywhere)
 	USceneComponent* RootComp;
+	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* DoorFrame;
+	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* Door;
 	UBoxComponent* Box;
 	UMaterialInstanceDynamic* DoorFrameMaterial;
 	UMaterialInstanceDynamic* DoorMaterial;
 	UPROPERTY(EditInstanceOnly, Category = "Material Params")
 	FLinearColor Color;
+	FRotator TargetRotation;
+	bool IsMoving;
+	float DoorSpeed;
 };

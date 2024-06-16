@@ -19,13 +19,13 @@ AWChest::AWChest()
 	ChestBottom = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ChestBottom"));
 
 	// Attach ChestTop, ChestBottom Mesh
-	ConstructorHelpers::FObjectFinder<UStaticMesh> TopAsset(TEXT("StaticMesh'/Game/Assignment/Chest/SM_ChestTop.SM_ChestTop'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> TopAsset(TEXT("StaticMesh'/Game/Assignment1/Chest/SM_ChestTop.SM_ChestTop'"));
 	if (TopAsset.Succeeded())
 	{
 		ChestTop->SetStaticMesh(TopAsset.Object);
 		ChestTop->SetupAttachment(RootComp);
 	}
-	ConstructorHelpers::FObjectFinder<UStaticMesh> BottomAsset(TEXT("StaticMesh'/Game/Assignment/Chest/SM_ChestBottom.SM_ChestBottom'"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> BottomAsset(TEXT("StaticMesh'/Game/Assignment1/Chest/SM_ChestBottom.SM_ChestBottom'"));
 	if (BottomAsset.Succeeded())
 	{
 		ChestBottom->SetStaticMesh(BottomAsset.Object);
@@ -38,7 +38,7 @@ void AWChest::OnConstruction(const FTransform& Transform)
 	Super::OnConstruction(Transform);
 
 	// StaticLoadObject and get material asset
-	UObject* Asset = StaticLoadObject(UMaterialInstanceConstant::StaticClass(), nullptr, TEXT("MaterialInstanceConstant'/Game/Assignment/Chest/MI_Chest.MI_Chest'"));
+	UObject* Asset = StaticLoadObject(UMaterialInstanceConstant::StaticClass(), nullptr, TEXT("MaterialInstanceConstant'/Game/Assignment1/Chest/MI_Chest.MI_Chest'"));
 	UMaterialInstanceConstant* MaterialAsset = Cast<UMaterialInstanceConstant>(Asset);
 
 	// Create Dynamic material instance
@@ -58,7 +58,7 @@ void AWChest::BeginPlay()
 
 }
 
-void AWChest::OpenTheChest()
+void AWChest::OpenTheChest_Implementation()
 {
 	if (!CanOpen) return;
 
@@ -69,18 +69,18 @@ void AWChest::OpenTheChest()
 	{
 		if (Emissive == FLinearColor::Red)
 		{
-			Player->RedKey += 1;
-			CLog::Print("Player Red Key: " + FString::FromInt(Player->RedKey));
+			Player->RedKey = 1.f;
+			CLog::Log("Player Red Key: " + FString::FromInt(Player->RedKey));
 		}
 		else if (Emissive == FLinearColor::Blue)
 		{
-			Player->BlueKey += 1;
-			CLog::Print("Player Blue Key: " + FString::FromInt(Player->BlueKey));
+			Player->BlueKey = 1.f;
+			CLog::Log("Player Blue Key: " + FString::FromInt(Player->BlueKey));
 		}
 		else if (Emissive == FLinearColor::Green)
 		{
-			Player->GreenKey += 1;
-			CLog::Print("Player Green Key: " + FString::FromInt(Player->GreenKey));
+			Player->GreenKey = 1.f;
+			CLog::Log("Player Green Key: " + FString::FromInt(Player->GreenKey));
 		}
 	}
 }

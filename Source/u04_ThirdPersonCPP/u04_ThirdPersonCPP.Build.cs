@@ -6,7 +6,7 @@ public class u04_ThirdPersonCPP : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Slate" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Slate", "UMG" });
 
 		//PrivateDependencyModuleNames.AddRange(new string[] {  });
 		PublicIncludePaths.Add(ModuleDirectory);

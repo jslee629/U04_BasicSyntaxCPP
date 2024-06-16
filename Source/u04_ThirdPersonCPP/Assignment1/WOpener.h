@@ -16,6 +16,6 @@ protected:
 	virtual void ActorEndOverlap(AActor* OverlappedActor, AActor* OtherActor) override;
 
 public:
-	UPROPERTY(EditInstanceOnly)
+	UPROPERTY(EditAnywhere)
 	AWChest* Chest;
 };

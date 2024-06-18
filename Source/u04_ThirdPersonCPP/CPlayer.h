@@ -49,6 +49,9 @@ protected:
 	void OnAim();
 	void OffAim();
 
+	void OnFire();
+	void OffFire();
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor);
@@ -69,4 +72,9 @@ private:
 
 	ACWeapon* Weapon;
 	UCCrossHairWidget* CrossHairWidget;
+
+	// Inherited via ICWeaponInterface
+	virtual void GetAimInfo(FVector& OutAimStart, FVector& OutAimEnd, FVector& OutAimDirection) override;
+	virtual void OnTarget() override;
+	virtual void OffTarget() override;
 };

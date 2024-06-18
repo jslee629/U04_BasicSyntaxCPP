@@ -3,6 +3,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "CAnimInstance.h"
@@ -29,7 +30,7 @@ ACPlayer::ACPlayer()
 	GetCharacterMovement()->MaxWalkSpeed = 400.f;
 
 	// 마네킹 메시 붙이기
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("SkeletalMesh'/Game/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshAsset(TEXT("/Game/Character/Mesh/SK_Mannequin"));
 	if (MeshAsset.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(MeshAsset.Object);
@@ -45,7 +46,7 @@ ACPlayer::ACPlayer()
 	}
 
 	// 에임위젯 넣어주기
-	ConstructorHelpers::FClassFinder<UCCrossHairWidget> CrossHairWidgetClassAsset(TEXT("WidgetBlueprint'/Game/Widgets/WB_Crosshair.WB_Crosshair'"));
+	ConstructorHelpers::FClassFinder<UCCrossHairWidget> CrossHairWidgetClassAsset(TEXT("/Game/Widgets/WB_Crosshair"));
 	if (CrossHairWidgetClassAsset.Succeeded())
 	{
 		CrossHairWidgetClass = CrossHairWidgetClassAsset.Class;
@@ -99,6 +100,9 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Pressed, this, &ACPlayer::OnAim);
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Released, this, &ACPlayer::OffAim);
+
+	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ACPlayer::OnFire);
+	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Released, this, &ACPlayer::OffFire);
 }
 
 void ACPlayer::OnMoveForward(float Axis)
@@ -166,6 +170,8 @@ void ACPlayer::OnAim()
 	Begin_Zoom();
 
 	Weapon->Begin_Aiming();
+
+	CrossHairWidget->SetVisibility(ESlateVisibility::Visible);
 }
 
 void ACPlayer::OffAim()
@@ -184,11 +190,48 @@ void ACPlayer::OffAim()
 	End_Zoom();
 
 	Weapon->End_Aiming();
+
+	CrossHairWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void ACPlayer::OnFire()
+{
+	Weapon->Begin_Fire();
+}
+
+void ACPlayer::OffFire()
+{
+	Weapon->End_Fire();
 }
 
 void ACPlayer::SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor)
 {
 	BodyMaterial->SetVectorParameterValue("BodyColor", InBodyColor);
 	LogoMaterial->SetVectorParameterValue("BodyColor", InLogoColor);
+}
+
+void ACPlayer::GetAimInfo(FVector& OutAimStart, FVector& OutAimEnd, FVector& OutAimDirection)
+{
+	OutAimDirection = CameraComp->GetForwardVector();
+
+	FVector MuzzleLoation = Weapon->GetMesh()->GetSocketLocation("MuzzleFlash");
+	FVector CameraLocation = CameraComp->GetComponentToWorld().GetLocation();
+	OutAimStart = CameraLocation + OutAimDirection * (OutAimDirection | (MuzzleLoation - CameraLocation));
+
+	FVector RandomConeDirection = UKismetMathLibrary::RandomUnitVectorInConeInDegrees(OutAimDirection, 0.2f);
+	RandomConeDirection *= 50000.f;
+	OutAimEnd = CameraLocation + RandomConeDirection;
+}
+
+void ACPlayer::OnTarget()
+{
+	if (CrossHairWidget == nullptr) return;
+	CrossHairWidget->OnTarget();
+}
+
+void ACPlayer::OffTarget()
+{
+	if (CrossHairWidget == nullptr) return;
+	CrossHairWidget->OffTarget();
 }
 

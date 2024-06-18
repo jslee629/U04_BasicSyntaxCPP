@@ -7,6 +7,7 @@
 class USkeletalMeshComponent;
 class ACharacter;
 class UAnimMontage;
+class UCameraShake;
 
 UCLASS()
 class U04_THIRDPERSONCPP_API ACWeapon : public AActor
@@ -26,9 +27,15 @@ public:
 	FORCEINLINE bool IsEquipped() { return bEquipped; }
 	FORCEINLINE bool IsEquipping() { return bEquipping; }
 	FORCEINLINE bool IsAiming() { return bAiming; }
+	FORCEINLINE USkeletalMeshComponent* GetMesh() { return MeshComp; }
 
 	void Begin_Aiming();	// setter 에 왠만하면 파라미터 받지 말자
 	void End_Aiming();		// setter 에 왠만하면 파라미터 받지 말자
+	void Begin_Fire();
+	void End_Fire();
+
+	UFUNCTION()
+	void Firing();
 
 	void Equip();
 	void Begin_Equip();		// in notify
@@ -50,6 +57,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* UnequipMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "CameraShake")
+	TSubclassOf<UCameraShake> CameraShakeClass;
+
 private:
 	UPROPERTY(VisibleDefaultsOnly)
 	USkeletalMeshComponent* MeshComp;
@@ -60,4 +70,5 @@ private:
 	bool bEquipped;
 	bool bEquipping;
 	bool bAiming;
+	bool bFiring;
 };

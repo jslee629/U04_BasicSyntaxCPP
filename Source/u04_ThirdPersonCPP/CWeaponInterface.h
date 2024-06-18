@@ -18,4 +18,8 @@ class U04_THIRDPERSONCPP_API ICWeaponInterface
 
 public:
 	virtual ACWeapon* GetWeapon() = 0;
+	virtual void GetAimInfo(FVector& OutAimStart, FVector& OutAimEnd, FVector& OutAimDirection) = 0;
+
+	virtual void OnTarget() {};
+	virtual void OffTarget() {};
 };

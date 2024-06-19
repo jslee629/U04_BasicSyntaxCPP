@@ -2,7 +2,7 @@
 
 Au04_ThirdPersonCPPGameModeBase::Au04_ThirdPersonCPPGameModeBase()
 {
-	ConstructorHelpers::FClassFinder<APawn> pawnAsset(TEXT("Blueprint'/Game/BP_CPlayer.BP_CPlayer_C'"));
+	ConstructorHelpers::FClassFinder<APawn> pawnAsset(TEXT("/Game/BP_CPlayer"));
 
 	if (pawnAsset.Succeeded())
 	{

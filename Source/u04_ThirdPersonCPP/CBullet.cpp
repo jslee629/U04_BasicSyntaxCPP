@@ -22,11 +22,14 @@ ACBullet::ACBullet()
 	}
 
 	MeshComp->SetRelativeScale3D(FVector(1.f, 0.025f, 0.025f));
+	MeshComp->CastShadow = 0;
+	SetActorEnableCollision(false);
 
 	ProjectileComp = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileComp");
 	ProjectileComp->InitialSpeed = 2e+4f;
 	ProjectileComp->MaxSpeed = 2e+4f;
 	ProjectileComp->ProjectileGravityScale = 0;
+
 
 
 }

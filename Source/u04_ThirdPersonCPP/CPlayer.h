@@ -10,6 +10,7 @@ class UCameraComponent;
 class UMaterialInstanceDynamic;
 class ACWeapon;
 class UCCrossHairWidget;
+class UCWeaponWidget;
 
 UCLASS()
 class U04_THIRDPERSONCPP_API ACPlayer : public ACharacter, public ICWeaponInterface
@@ -52,6 +53,8 @@ protected:
 	void OnFire();
 	void OffFire();
 
+	void OnAutoFire();
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor);
@@ -59,19 +62,26 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	UCameraComponent* CameraComp;
+
 	UPROPERTY(EditDefaultsOnly, Category="WeaponClass")
 	TSubclassOf<ACWeapon> WeaponClass;
+
 	UPROPERTY(EditDefaultsOnly, Category = "WidgetClass")
 	TSubclassOf<UCCrossHairWidget> CrossHairWidgetClass;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = "WidgetClass")
+	TSubclassOf<UCWeaponWidget> WeaponWidgetClass;
+
 private:
 	UMaterialInstanceDynamic* BodyMaterial;
 	UMaterialInstanceDynamic* LogoMaterial;
 
 	ACWeapon* Weapon;
 	UCCrossHairWidget* CrossHairWidget;
+	UCWeaponWidget* WeaponWidget;
 
 	// Inherited via ICWeaponInterface
 	virtual void GetAimInfo(FVector& OutAimStart, FVector& OutAimEnd, FVector& OutAimDirection) override;

@@ -10,6 +10,7 @@
 #include "CWeapon.h"
 #include "Widgets/CCrossHairWidget.h"
 #include "Widgets/CWeaponWidget.h"
+#include "CCartridge.h"
 
 ACPlayer::ACPlayer()
 {
@@ -93,6 +94,9 @@ void ACPlayer::BeginPlay()
 	// 웨폰위젯 스폰
 	WeaponWidget = CreateWidget<UCWeaponWidget, APlayerController>(GetController<APlayerController>(), WeaponWidgetClass);
 	WeaponWidget->AddToViewport();
+
+	OnOutOfBullet.BindUFunction(Weapon, "Reload");
+	OnUpdateWidget.BindUFunction(WeaponWidget, "BulletInfo");
 }
 
 void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -118,6 +122,8 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Released, this, &ACPlayer::OffFire);
 
 	PlayerInputComponent->BindAction("AutoFire", EInputEvent::IE_Pressed, this, &ACPlayer::OnAutoFire);
+
+	PlayerInputComponent->BindAction("Reload", EInputEvent::IE_Pressed, this, &ACPlayer::OnReload);
 }
 
 void ACPlayer::OnMoveForward(float Axis)
@@ -229,10 +235,36 @@ void ACPlayer::OnAutoFire()
 	Weapon->IsAutoFire() ? WeaponWidget->OnAutoFire() : WeaponWidget->OffAutoFire();
 }
 
+void ACPlayer::OnReload()
+{
+	Weapon->Reload();
+}
+
 void ACPlayer::SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor)
 {
 	BodyMaterial->SetVectorParameterValue("BodyColor", InBodyColor);
 	LogoMaterial->SetVectorParameterValue("BodyColor", InLogoColor);
+}
+
+void ACPlayer::SpawnCartridge()
+{
+	FActorSpawnParameters SpawnParam;
+	SpawnParam.Owner = this;
+	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	Cartridge = GetWorld()->SpawnActor<ACCartridge>(ACCartridge::StaticClass(), SpawnParam);
+	if (Cartridge == nullptr) return;
+
+	Cartridge->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, "Fist_LeftHand");
+}
+
+void ACPlayer::DiscardCartridge()
+{
+	Cartridge->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+}
+
+void ACPlayer::DestroyCartridge()
+{
+	Cartridge->Destroy();
 }
 
 void ACPlayer::GetAimInfo(FVector& OutAimStart, FVector& OutAimEnd, FVector& OutAimDirection)

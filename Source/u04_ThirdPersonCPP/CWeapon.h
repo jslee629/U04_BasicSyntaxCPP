@@ -34,6 +34,8 @@ public:
 	FORCEINLINE bool IsAiming() { return bAiming; }
 	FORCEINLINE bool IsFiring() { return bFiring; }
 	FORCEINLINE bool IsAutoFire() { return bAutoFire; }
+	FORCEINLINE bool IsReloading() { return bReloading; }
+	FORCEINLINE void SetbReloading(bool b) { bReloading = b; }
 
 	void ToggleAutoFire();	// 연사 모드 설정
 
@@ -53,6 +55,11 @@ public:
 	void Unequip();
 	void Begin_Unequip();	// in notify
 	void End_Unequip();		// in notify
+
+	UFUNCTION()
+	void Reload();
+	void Begin_Reload();
+	void End_Reload();
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "BulletClass")
@@ -75,6 +82,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* UnequipMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UAnimMontage* ReloadMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "CameraShake")
 	TSubclassOf<UCameraShake> CameraShakeClass;
@@ -106,8 +116,15 @@ private:
 	bool bAiming;
 	bool bFiring;
 	bool bAutoFire;
+	bool bReloading;
 
 	float CurrentPitch;
 
 	FTimerHandle AutoTimerHandle;
+
+public:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	int32 MaxBulletCount;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	int32 CurBulletCount;
 };

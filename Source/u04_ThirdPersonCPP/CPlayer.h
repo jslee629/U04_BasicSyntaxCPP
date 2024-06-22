@@ -11,6 +11,10 @@ class UMaterialInstanceDynamic;
 class ACWeapon;
 class UCCrossHairWidget;
 class UCWeaponWidget;
+class ACCartridge;
+
+DECLARE_DELEGATE(FOutOfBullet);
+DECLARE_DELEGATE(FUpdateWidget);
 
 UCLASS()
 class U04_THIRDPERSONCPP_API ACPlayer : public ACharacter, public ICWeaponInterface
@@ -23,6 +27,7 @@ public:
 	UFUNCTION(Exec)
 	void ChangeSpeed(float InMoveSpeed = 400);
 
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE ACWeapon* GetWeapon() override { return Weapon; }
 
 protected:
@@ -55,9 +60,15 @@ protected:
 
 	void OnAutoFire();
 
+	void OnReload();
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetBodyColor(FLinearColor InBodyColor, FLinearColor InLogoColor);
+
+	void SpawnCartridge();
+	void DiscardCartridge();
+	void DestroyCartridge();
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -83,8 +94,14 @@ private:
 	UCCrossHairWidget* CrossHairWidget;
 	UCWeaponWidget* WeaponWidget;
 
+	ACCartridge* Cartridge;
+
 	// Inherited via ICWeaponInterface
 	virtual void GetAimInfo(FVector& OutAimStart, FVector& OutAimEnd, FVector& OutAimDirection) override;
 	virtual void OnTarget() override;
 	virtual void OffTarget() override;
+
+public:
+	FOutOfBullet OnOutOfBullet;
+	FUpdateWidget OnUpdateWidget;
 };

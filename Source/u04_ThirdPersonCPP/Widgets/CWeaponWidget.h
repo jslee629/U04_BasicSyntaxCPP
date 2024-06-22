@@ -14,4 +14,6 @@ public:
 	void OnAutoFire();
 	UFUNCTION(BlueprintImplementableEvent)
 	void OffAutoFire();
+	UFUNCTION(BlueprintImplementableEvent)
+	void BulletInfo();
 };

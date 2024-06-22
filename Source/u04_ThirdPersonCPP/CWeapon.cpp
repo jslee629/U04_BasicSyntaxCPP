@@ -21,6 +21,10 @@ ACWeapon::ACWeapon()
 	HolsterSocket = "Holster_AR4";
 	HandSocket = "Hand_AR4";
 
+	// initialize BulletCount
+	MaxBulletCount = 30;
+	CurBulletCount = MaxBulletCount;
+
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>("MeshComp");
 	RootComponent = MeshComp;
 
@@ -53,6 +57,13 @@ ACWeapon::ACWeapon()
 	{
 		BulletClass = BulletClassAsset.Class;
 	}
+
+	// Load Reload Montage
+	ConstructorHelpers::FObjectFinder<UAnimMontage> ReloadMontageAsset(TEXT("/Game/Character/Animations/AR4/Rifle_Jog_Reload_Montage"));
+	if (ReloadMontageAsset.Succeeded())
+	{
+		ReloadMontage = ReloadMontageAsset.Object;
+	}
 }
 
 void ACWeapon::BeginPlay()
@@ -75,6 +86,16 @@ void ACWeapon::BeginPlay()
 void ACWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// Reload if CurBulletCount <= 0
+	if (CurBulletCount <= 0)
+	{
+		ACPlayer* Player = Cast<ACPlayer>(OwnerCharacter);
+		if (Player)
+		{
+			Player->OnOutOfBullet.Execute();
+		}
+	}
 
 	if (bAiming == false) return;
 
@@ -129,6 +150,7 @@ void ACWeapon::Begin_Fire()
 	if (bEquipping == true) return;
 	if (bAiming == false) return;
 	if (bFiring == true) return;
+	if (bReloading == true) return;
 
 	bFiring = true;
 	CurrentPitch = 0;
@@ -156,10 +178,16 @@ void ACWeapon::Firing()
 {
 	// Before firing bullet
 
+	if (bReloading == true) return;
+
 	// CameraShake
 	ACPlayer* Player = Cast<ACPlayer>(OwnerCharacter);
 	if (Player)
 	{
+		// Update Widget
+		CurBulletCount--;
+		Player->OnUpdateWidget.Execute();
+
 		APlayerController* PC = Player->GetController<APlayerController>();
 		if (CameraShakeClass == nullptr) return;
 		PC->PlayerCameraManager->PlayCameraShake(CameraShakeClass);
@@ -282,6 +310,33 @@ void ACWeapon::Begin_Unequip()
 void ACWeapon::End_Unequip()
 {
 	bEquipping = false;
+}
+
+void ACWeapon::Reload()
+{
+	if (bEquipped == false) return;
+	if (bReloading == true) return;
+
+	bReloading = true;
+	OwnerCharacter->PlayAnimMontage(ReloadMontage);
+
+	CurBulletCount = MaxBulletCount;
+
+	ACPlayer* Player = Cast<ACPlayer>(OwnerCharacter);
+	if (Player)
+	{
+		Player->OnUpdateWidget.Execute();
+	}
+}
+
+void ACWeapon::Begin_Reload()
+{
+	GetMesh()->HideBoneByName("b_gun_mag", EPhysBodyOp::PBO_None);
+}
+
+void ACWeapon::End_Reload()
+{
+	GetMesh()->UnHideBoneByName("b_gun_mag");
 }
 
 
